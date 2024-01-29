@@ -22,6 +22,9 @@ Dictionary<string, object> rabbitArgs = new Dictionary<string, object>()
 
 channel.QueueDeclare(queue: "costing.test.queue", durable: true, exclusive: false, autoDelete: false, arguments: rabbitArgs);
 
+// listen for messaging published to "costing" exchange with routing key "test"
+channel.QueueBind(queue: "costing.test.queue", exchange: "costing", routingKey: "test");
+
 Console.WriteLine(" [*] Waiting for messages.");
 
 var consumer = new EventingBasicConsumer(channel);
@@ -31,6 +34,7 @@ consumer.Received += (model, ea) =>
     var message = Encoding.UTF8.GetString(body);
     Console.WriteLine($" [x] Received {message}");
 };
+
 channel.BasicConsume(queue: "costing.test.queue",
                      autoAck: true,
                      consumer: consumer);
